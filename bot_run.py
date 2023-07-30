@@ -1,13 +1,13 @@
-import sys
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher, types, F
+import sys
+
+from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import Command
-from aiogram.types import URLInputFile, FSInputFile
+from aiogram.types import FSInputFile
 
 from config.bot_config import config
 from config.utils import ABOUT_ME, GITHUB_LINK, HELP_MESSAGE
-
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,7 +18,9 @@ dp = Dispatcher()
 @dp.message(F.new_chat_members)
 async def somebody_added(message: types.Message):
     for user in message.new_chat_members:
-        await message.reply(f'Привет, {user.full_name}, давай познакомимся! Жми /start')
+        await message.reply(
+            f'Привет, {user.full_name}, давай познакомимся! Жми /start'
+        )
 
 
 @dp.message(Command('start'))
@@ -51,8 +53,8 @@ async def cmd_help(message: types.Message):
 @dp.message(lambda message: message.text == 'Увлечения')
 async def cmd_hobbies(message: types.Message):
     try:
-        with open('media/hobbies.txt', mode="r", encoding="utf-8") as hobbies_file:
-            text = hobbies_file.read()
+        with open('media/hobbies.txt', mode="r", encoding="utf-8") as file:
+            text = file.read()
             await message.answer(text=text, parse_mode='HTML')
     except OSError:
         await message.answer('Невозможно прочитать файл Hobbies')
@@ -75,12 +77,14 @@ async def get_photo(message: types.Message):
         resize_keyboard=True,
         input_field_placeholder="Давай познакомимся!"
     )
-    await message.answer('Выбери, какое фото ты хочешь посмотреть', reply_markup=keyboard)
+    await message.answer(
+        'Выбери, какое фото ты хочешь посмотреть', reply_markup=keyboard
+    )
 
 
 @dp.message(Command('selfie'))
 @dp.message(lambda message: message.text == 'Селфи')
-async def cmd_img(message: types.Message):
+async def cmd_selfie(message: types.Message):
     image = FSInputFile("media/images/selfie.jpg")
     await message.answer_photo(
         image,
@@ -90,7 +94,7 @@ async def cmd_img(message: types.Message):
 
 @dp.message(Command('school_photo'))
 @dp.message(lambda message: message.text == 'Школьное')
-async def cmd_img(message: types.Message):
+async def cmd_photo(message: types.Message):
     image = FSInputFile("media/images/school.jpg")
     await message.answer_photo(
         image,
@@ -99,7 +103,7 @@ async def cmd_img(message: types.Message):
 
 
 @dp.message(lambda message: message.text == 'Войсы')
-async def get_photo(message: types.Message):
+async def get_voices(message: types.Message):
     kb = [
         [
             types.KeyboardButton(text='Про ChatGPT'),
@@ -119,23 +123,25 @@ async def get_photo(message: types.Message):
 
 
 @dp.message(lambda message: message.text == 'Про ChatGPT')
-async def cmd_img(message: types.Message):
+async def cmd_voice_chat(message: types.Message):
     file = FSInputFile("media/audio/chatgpt.m4a")
     await message.answer_audio(
         file,
         caption="Про ЧатГПТ для бабушки"
     )
 
+
 @dp.message(lambda message: message.text == 'Про SQL/NoSQL')
-async def cmd_img(message: types.Message):
+async def cmd_voice_sql(message: types.Message):
     file = FSInputFile("media/audio/sql.m4a")
     await message.answer_audio(
         file,
         caption="Про разницу между SQL и NoSQL"
     )
 
+
 @dp.message(lambda message: message.text == 'Про любовь')
-async def cmd_img(message: types.Message):
+async def cmd_voice_love(message: types.Message):
     file = FSInputFile("media/audio/love.m4a")
     await message.answer_audio(
         file,
